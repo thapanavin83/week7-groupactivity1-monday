@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useField from "../hooks/useField";
 
 const AddBookPage = () => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [isbn, setIsbn] = useState("");
+  const title = useField("text");
+  const author = useField("text");
+  const isbn = useField("text");
 
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user ? user.token : null;
@@ -21,9 +21,11 @@ const AddBookPage = () => {
         },
         body: JSON.stringify(newBook),
       });
+
       if (!res.ok) {
         throw new Error("Failed to add book");
       }
+
       return true;
     } catch (error) {
       console.error("Error adding book:", error);
@@ -35,12 +37,13 @@ const AddBookPage = () => {
     e.preventDefault();
 
     const newBook = {
-      title,
-      author,
-      isbn,
+      title: title.value,
+      author: author.value,
+      isbn: isbn.value,
     };
 
     const success = await addBook(newBook);
+
     if (success) {
       console.log("Book Added Successfully");
       navigate("/");
@@ -52,28 +55,17 @@ const AddBookPage = () => {
   return (
     <div className="create">
       <h2>Add a New Book</h2>
+
       <form onSubmit={submitForm}>
         <label>Book Title:</label>
-        <input
-          type="text"
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <input {...title} required />
+
         <label>Author:</label>
-        <input
-          type="text"
-          required
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-        />
+        <input {...author} required />
+
         <label>ISBN:</label>
-        <input
-          type="text"
-          required
-          value={isbn}
-          onChange={(e) => setIsbn(e.target.value)}
-        />
+        <input {...isbn} required />
+
         <button type="submit">Add Book</button>
       </form>
     </div>
@@ -81,4 +73,3 @@ const AddBookPage = () => {
 };
 
 export default AddBookPage;
-
